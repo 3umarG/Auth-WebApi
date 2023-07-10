@@ -37,15 +37,15 @@ namespace IdentityAuthWithJWT.Controllers
 			{
 				var userApi = _mapper.Map<ApiUser>(userDto);
 				userApi.UserName = userDto.Email;
-				var result = await _userManager.CreateAsync(userApi , userDto.Password);
+				var result = await _userManager.CreateAsync(userApi, userDto.Password);
 
 				if (!result.Succeeded)
 				{
-                    foreach (var error in result.Errors)
-                    {
+					foreach (var error in result.Errors)
+					{
 						ModelState.AddModelError(error.Code, error.Description);
-                    }
-                    return BadRequest(ModelState);
+					}
+					return BadRequest(ModelState);
 				}
 
 				return Ok(userDto);
@@ -53,6 +53,31 @@ namespace IdentityAuthWithJWT.Controllers
 			catch (Exception)
 			{
 				return Problem("Something went wrong , please try again later !!", statusCode: 500);
+			}
+		}
+
+
+		[HttpPost("Login")]
+		public async Task<IActionResult> Login([FromBody] UserLoginDto userDto)
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			try
+			{
+				var result = await _signInManager.PasswordSignInAsync(userDto.Email, userDto.Password ,false , false);
+				if (!result.Succeeded)
+				{
+					return Unauthorized();
+                }
+
+				return Ok(userDto);
+			}
+			catch (Exception)
+			{
+				return Problem("Something went wrong with Login !!");
 			}
 		}
 	}
