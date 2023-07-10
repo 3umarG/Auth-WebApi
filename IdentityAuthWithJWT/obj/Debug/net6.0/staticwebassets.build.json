@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "jn8SJkUsFSGBeNH3ilCSxsaI0L7LhpzKKA5tt7SPhVU=",
+  "Source": "IdentityAuthWithJWT",
+  "BasePath": "_content/IdentityAuthWithJWT",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
