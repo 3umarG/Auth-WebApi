@@ -1,3 +1,4 @@
+using IdentityAuthWithJWT;
 using IdentityAuthWithJWT.Data;
 using IdentityAuthWithJWT.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+// add AutoMapper Service
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddDbContext<ApplicationDbContext>(
 	options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
