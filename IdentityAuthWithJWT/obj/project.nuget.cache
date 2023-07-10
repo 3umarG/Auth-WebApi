@@ -1,14 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "6sM/gVFXIbodZ/cQ99MJGXbPq3zeo7FqECBKjOx68v6YC2BaMAr5u37nC/A+XQ3bDko0BEgOscJzAVy03YkB9A==",
+  "dgSpecHash": "sr6TDRU8bfF8L/SggPUGiEDeJ7sWBt1OPiJlotVcnbO3CBEGF1m+hnHMFWL+ZAfh6mxmbwiVYwUqu5tvKGua0A==",
   "success": true,
   "projectFilePath": "D:\\CS_projects\\IdentityAuthWithJWT\\IdentityAuthWithJWT\\IdentityAuthWithJWT.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Ghost\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
+    "C:\\Users\\Ghost\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "C:\\Users\\Ghost\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\Ghost\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\6.0.0\\microsoft.aspnetcore.cryptography.internal.6.0.0.nupkg.sha512",
     "C:\\Users\\Ghost\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\6.0.0\\microsoft.aspnetcore.cryptography.keyderivation.6.0.0.nupkg.sha512",
     "C:\\Users\\Ghost\\.nuget\\packages\\microsoft.aspnetcore.identity.entityframeworkcore\\6.0.0\\microsoft.aspnetcore.identity.entityframeworkcore.6.0.0.nupkg.sha512",
-    "C:\\Users\\Ghost\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
+    "C:\\Users\\Ghost\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
     "C:\\Users\\Ghost\\.nuget\\packages\\microsoft.data.sqlclient\\2.1.4\\microsoft.data.sqlclient.2.1.4.nupkg.sha512",
     "C:\\Users\\Ghost\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\2.1.1\\microsoft.data.sqlclient.sni.runtime.2.1.1.nupkg.sha512",
     "C:\\Users\\Ghost\\.nuget\\packages\\microsoft.entityframeworkcore\\6.0.0\\microsoft.entityframeworkcore.6.0.0.nupkg.sha512",

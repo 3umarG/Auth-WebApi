@@ -1,6 +1,7 @@
 using IdentityAuthWithJWT;
 using IdentityAuthWithJWT.Data;
 using IdentityAuthWithJWT.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +22,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 
 /// For Idetity Setup 
 builder.Services.AddAuthentication();
-builder.Services.ConfigureIdentity();
+//builder.Services.ConfigureIdentity();
+
+builder.Services.AddIdentity<ApiUser, IdentityRole>(options =>
+		{
+			options.User.RequireUniqueEmail = false;
+		})
+	   .AddEntityFrameworkStores<ApplicationDbContext>()
+	   .AddDefaultTokenProviders();
 
 
 var app = builder.Build();
