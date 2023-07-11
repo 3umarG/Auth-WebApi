@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,6 +74,20 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Unauthorized (401) MiddleWare
+app.Use(async (context, next) =>
+{
+	await next();
+
+	if (context.Response.StatusCode == (int)HttpStatusCode.Unauthorized) // 401
+	{
+		context.Response.ContentType = "application/json";
+		var failureResponse = new FailureResponse(401, "You are UnAuthenticated , please provide Token !!");
+		await context.Response.WriteAsync(failureResponse.ToString());
+	}
+});
+
 
 app.UseAuthentication();
 app.UseAuthorization();

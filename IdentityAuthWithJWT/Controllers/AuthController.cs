@@ -17,6 +17,8 @@ namespace IdentityAuthWithJWT.Controllers
 		//private readonly UserManager<ApiUser> _userManager;
 		private readonly IMapper _mapper;
 		private readonly IAuthService _authService;
+		private IResponseFactory _successFactory;
+		private IResponseFactory _failureFactory;
 
 		public AuthController(
 			IAuthService authService,
