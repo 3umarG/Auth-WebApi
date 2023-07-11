@@ -2,6 +2,8 @@
 using IdentityAuthWithJWT.Data;
 using IdentityAuthWithJWT.DTOs;
 using IdentityAuthWithJWT.Interfaces;
+using IdentityAuthWithJWT.Models;
+using IdentityAuthWithJWT.Models.Authentication.Register;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -41,12 +43,13 @@ namespace IdentityAuthWithJWT.Controllers
 				var result = await _authService.RegisterAsync(userDto);
 				if (!result.IsAuthed)
 				{
-					return BadRequest(result.Message);
+					_failureFactory = new FailureResponseFactory(400, result.Message);
+					return BadRequest(_failureFactory.CreateResponse());
 				}
 
 
-
-				return Ok(result);
+				_successFactory = new SuccessResponseFactory<AuthModel>(200, result);
+				return Ok(_successFactory.CreateResponse());
 			}
 			catch (Exception)
 			{
@@ -68,12 +71,14 @@ namespace IdentityAuthWithJWT.Controllers
 				var result = await _authService.RegisterAsync(userDto, true);
 				if (!result.IsAuthed)
 				{
-					return BadRequest(result.Message);
+					_failureFactory = new FailureResponseFactory(400, result.Message);
+					return BadRequest(_failureFactory.CreateResponse());
 				}
 
 
 
-				return Ok(result);
+				_successFactory = new SuccessResponseFactory<AuthModel>(200, result);
+				return Ok(_successFactory.CreateResponse());
 			}
 			catch (Exception)
 			{
@@ -95,10 +100,12 @@ namespace IdentityAuthWithJWT.Controllers
 
 				if (!result.IsAuthed)
 				{
-					return BadRequest(result.Message);
+					_failureFactory = new FailureResponseFactory(400, result.Message);
+					return BadRequest(_failureFactory.CreateResponse());
 				}
 
-				return Ok(result);
+				_successFactory = new SuccessResponseFactory<AuthModel>(200, result);
+				return Ok(_successFactory.CreateResponse());
 			}
 			catch (Exception)
 			{
@@ -118,9 +125,13 @@ namespace IdentityAuthWithJWT.Controllers
 			var result = await _authService.AddToRoleAsync(model);
 
 			if (result.IsNullOrEmpty())
-				return Ok(model);
+			{
+				_successFactory = new SuccessResponseFactory<AddUserToRoleRequestDto>(200, model ,"Added Successfully");
+				return Ok(_successFactory.CreateResponse());
+			}
 
-			return BadRequest(result);
+			_failureFactory = new FailureResponseFactory(400, "Something went wrong");
+			return BadRequest(_failureFactory.CreateResponse());
 		}
 
 
@@ -134,13 +145,14 @@ namespace IdentityAuthWithJWT.Controllers
 
 			try
 			{
-
 				var updatedUser = await _authService.UpdateUserNameAsync(newUser);
-				return Ok(updatedUser);
+				_successFactory = new SuccessResponseFactory<UpdateUserDto>(200, updatedUser);
+				return Ok(_successFactory.CreateResponse());
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
+				_failureFactory = new FailureResponseFactory(400, ex.Message);
+				return BadRequest(_failureFactory.CreateResponse());
 			}
 		}
 
@@ -151,7 +163,8 @@ namespace IdentityAuthWithJWT.Controllers
 		{
 
 			var users = _authService.GetAllUsers();
-			return Ok(_mapper.Map<List<UserDto>>(users));
+			_successFactory = new SuccessResponseFactory<List<UserDto>>(200,_mapper.Map<List<UserDto>>(users));
+			return Ok(_successFactory.CreateResponse());
 		}
 
 
@@ -159,7 +172,9 @@ namespace IdentityAuthWithJWT.Controllers
 		[HttpGet("GetAllUsersWithPolicy")]
 		public IActionResult GetAllUsersWithPolicyAsync()
 		{
-			return Ok(_mapper.Map<List<UserDto>>(_authService.GetAllUsers().ToList()));
+			var users = _authService.GetAllUsers();
+			_successFactory = new SuccessResponseFactory<List<UserDto>>(200, _mapper.Map<List<UserDto>>(users));
+			return Ok(_successFactory.CreateResponse());
 		}
 	}
 }
