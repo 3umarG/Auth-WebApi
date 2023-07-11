@@ -14,18 +14,15 @@ namespace IdentityAuthWithJWT.Controllers
 	public class AuthController : ControllerBase
 	{
 		//private readonly UserManager<ApiUser> _userManager;
-		private readonly SignInManager<ApiUser> _signInManager;
 		private readonly IMapper _mapper;
 		private readonly IAuthService _authService;
 
 		public AuthController(
-			SignInManager<ApiUser> signInManager,
 			IAuthService authService,
 			IMapper mapper)
 		{
 			_authService = authService;
 			_mapper = mapper;
-			_signInManager = signInManager;
 		}
 
 		[HttpPost("Register")]
@@ -45,7 +42,7 @@ namespace IdentityAuthWithJWT.Controllers
 				}
 
 
-			
+
 				return Ok(result);
 			}
 			catch (Exception)
@@ -98,13 +95,14 @@ namespace IdentityAuthWithJWT.Controllers
 
 			try
 			{
-				var result = await _signInManager.PasswordSignInAsync(userDto.Email, userDto.Password, false, false);
-				if (!result.Succeeded)
+				var result = await _authService.Login(userDto);
+
+				if (!result.IsAuthed)
 				{
-					return Unauthorized();
+					return BadRequest(result.Message);
 				}
 
-				return Ok(userDto);
+				return Ok(result);
 			}
 			catch (Exception)
 			{
