@@ -23,6 +23,31 @@ namespace IdentityAuthWithJWT.Models
 			_mapper = mapper;
 			_userManager = userManager;
 		}
+
+		public async Task<AuthModel> Login(UserLoginDto model)
+		{
+			var auth = new AuthModel();
+
+			var user = await _userManager.FindByEmailAsync(model.Email);
+
+			if(user is null || !await _userManager.CheckPasswordAsync(user , model.Password))
+			{
+				auth.Message = "Your Email or Password is not correct";
+				return auth;
+			}
+
+			// get the token:
+			var jwtSecurityToken = await CreateJwtToken(user);
+
+			auth.Email = user.Email;
+			auth.UserName = user.UserName;
+			auth.ExpiresOn = jwtSecurityToken.ValidTo;
+			auth.IsAuthed = true;
+			auth.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+
+			return auth;
+		}
+
 		public async Task<AuthModel> RegisterAsync(UserDto model)
 		{
 			var usedEmail = await _userManager.FindByEmailAsync(model.Email);

@@ -6,5 +6,7 @@ namespace IdentityAuthWithJWT.Interfaces
 	public interface IAuthService
 	{
 		Task<AuthModel> RegisterAsync(UserDto model);
+
+		Task<AuthModel> Login(UserLoginDto model);
 	}
 }
