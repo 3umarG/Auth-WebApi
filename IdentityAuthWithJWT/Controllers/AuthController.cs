@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using IdentityAuthWithJWT.Data;
 using IdentityAuthWithJWT.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
