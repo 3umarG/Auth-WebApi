@@ -15,13 +15,34 @@ namespace IdentityAuthWithJWT.Models
 	public class AuthService : IAuthService
 	{
 		private readonly UserManager<ApiUser> _userManager;
+		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly IMapper _mapper;
 		private readonly JWT _jwt;
-		public AuthService(UserManager<ApiUser> userManager, IMapper mapper, IOptions<JWT> jwt)
+		public AuthService(UserManager<ApiUser> userManager, IMapper mapper, IOptions<JWT> jwt , RoleManager<IdentityRole> roleManager)
 		{
+			_roleManager = roleManager;
 			_jwt = jwt.Value;
 			_mapper = mapper;
 			_userManager = userManager;
+		}
+
+		public async Task<string> AddToRoleAsync(AddUserToRoleRequestDto model)
+		{
+			var user = await _userManager.FindByEmailAsync(model.EmailOrUserName);
+			if (user is null)
+				return "Invalid User Name/Email";
+
+			if (!await _roleManager.RoleExistsAsync(model.RoleName))
+				return "Invalid Role Name";
+
+			if (await _userManager.IsInRoleAsync(user, model.RoleName))
+				return $"The User : {model.EmailOrUserName} is already assigned to : {model.RoleName} Role";
+
+			var result = await _userManager.AddToRoleAsync(user, model.RoleName);
+			if (!result.Succeeded)
+				return "Something went wrong !!";
+
+			return string.Empty;
 		}
 
 		public async Task<AuthModel> Login(UserLoginDto model)
