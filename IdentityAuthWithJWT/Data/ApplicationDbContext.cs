@@ -14,6 +14,8 @@ namespace IdentityAuthWithJWT.Data
 		{
 			base.OnModelCreating(builder);
 
+			builder.ApplyConfiguration(new RoleConfig());
+
 			builder.Entity<ApiUser>().ToTable("Users");
 			builder.Entity<IdentityRole>().ToTable("Roles");
 			builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
