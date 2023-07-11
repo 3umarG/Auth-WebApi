@@ -51,9 +51,9 @@ namespace IdentityAuthWithJWT.Controllers
 			}
 		}
 
-		/*
+		
 		[HttpPost("RegisterAdmin")]
-		public async Task<IActionResult> AdminRegister([FromBody] UserDto userDto)
+		public async Task<IActionResult> RegisterAdmin([FromBody] UserDto userDto)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -62,28 +62,21 @@ namespace IdentityAuthWithJWT.Controllers
 
 			try
 			{
-				var userApi = _mapper.Map<ApiUser>(userDto);
-				userApi.UserName = userDto.Email;
-				var result = await _userManager.CreateAsync(userApi, userDto.Password);
-
-				if (!result.Succeeded)
+				var result = await _authService.RegisterAsync(userDto ,true);
+				if (!result.IsAuthed)
 				{
-					foreach (var error in result.Errors)
-					{
-						ModelState.AddModelError(error.Code, error.Description);
-					}
-					return BadRequest(ModelState);
+					return BadRequest(result.Message);
 				}
 
-				await _userManager.AddToRoleAsync(userApi, "Admin");
-				return Ok(userDto);
+
+
+				return Ok(result);
 			}
 			catch (Exception)
 			{
 				return Problem("Something went wrong , please try again later !!", statusCode: 500);
 			}
 		}
-		*/
 
 		[HttpPost("Login")]
 		public async Task<IActionResult> Login([FromBody] UserLoginDto userDto)
