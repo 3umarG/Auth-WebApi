@@ -30,7 +30,7 @@ namespace IdentityAuthWithJWT.Models
 
 			var user = await _userManager.FindByEmailAsync(model.Email);
 
-			if(user is null || !await _userManager.CheckPasswordAsync(user , model.Password))
+			if (user is null || !await _userManager.CheckPasswordAsync(user, model.Password))
 			{
 				auth.Message = "Your Email or Password is not correct";
 				return auth;
@@ -48,7 +48,7 @@ namespace IdentityAuthWithJWT.Models
 			return auth;
 		}
 
-		public async Task<AuthModel> RegisterAsync(UserDto model)
+		public async Task<AuthModel> RegisterAsync(UserDto model, bool isAdmin = false)
 		{
 			var usedEmail = await _userManager.FindByEmailAsync(model.Email);
 			if (usedEmail is not null)
@@ -78,7 +78,11 @@ namespace IdentityAuthWithJWT.Models
 				};
 			}
 
-			await _userManager.AddToRoleAsync(apiUser, "User");
+			if (isAdmin)
+				await _userManager.AddToRoleAsync(apiUser, "Admin");
+			else
+				await _userManager.AddToRoleAsync(apiUser, "User");
+
 
 			// get the token:
 			var jwtSecurityToken = await CreateJwtToken(apiUser);
