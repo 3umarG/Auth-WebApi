@@ -86,6 +86,12 @@ app.Use(async (context, next) =>
 		var failureResponse = new FailureResponse(401, "You are UnAuthenticated , please provide Token !!");
 		await context.Response.WriteAsync(failureResponse.ToString());
 	}
+	else if (context.Response.StatusCode == (int)HttpStatusCode.Forbidden) // 403
+	{
+		context.Response.ContentType = "application/json";
+		var failureResponse = new FailureResponse(403, "You are Denied from accessing this End point because it needs certain Role !!");
+		await context.Response.WriteAsync(failureResponse.ToString());
+	}
 });
 
 
