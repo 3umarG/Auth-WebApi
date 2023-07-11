@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthWithJWT.Controllers
 {
@@ -51,7 +52,7 @@ namespace IdentityAuthWithJWT.Controllers
 			}
 		}
 
-		
+
 		[HttpPost("RegisterAdmin")]
 		public async Task<IActionResult> RegisterAdmin([FromBody] UserDto userDto)
 		{
@@ -62,7 +63,7 @@ namespace IdentityAuthWithJWT.Controllers
 
 			try
 			{
-				var result = await _authService.RegisterAsync(userDto ,true);
+				var result = await _authService.RegisterAsync(userDto, true);
 				if (!result.IsAuthed)
 				{
 					return BadRequest(result.Message);
@@ -103,6 +104,22 @@ namespace IdentityAuthWithJWT.Controllers
 			}
 		}
 
+
+		[HttpPost("AddUserToRole")]
+		public async Task<IActionResult> AddToRole([FromBody] AddUserToRoleRequestDto model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			var result = await _authService.AddToRoleAsync(model);
+
+			if (result.IsNullOrEmpty())
+				return Ok(model);
+
+			return BadRequest(result);
+		}
 		/*
 		[HttpPost("Update")]
 		public async Task<IActionResult> Update( [FromBody] UpdateUserDto newUser)
