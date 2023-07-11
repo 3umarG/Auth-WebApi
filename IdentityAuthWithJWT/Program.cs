@@ -1,6 +1,7 @@
 using IdentityAuthWithJWT;
 using IdentityAuthWithJWT.Data;
 using IdentityAuthWithJWT.Extensions;
+using IdentityAuthWithJWT.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,6 +32,9 @@ builder.Services.AddIdentity<ApiUser, IdentityRole>(options =>
 	   .AddEntityFrameworkStores<ApplicationDbContext>()
 	   .AddDefaultTokenProviders();
 
+
+// Mapping JWT values from appsettings.json to object
+builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 
 var app = builder.Build();
 

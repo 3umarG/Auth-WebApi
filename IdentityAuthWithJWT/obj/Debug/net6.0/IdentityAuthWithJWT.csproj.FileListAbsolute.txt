@@ -66,3 +66,5 @@ D:\CS_projects\IdentityAuthWithJWT\IdentityAuthWithJWT\obj\Debug\net6.0\Identity
 D:\CS_projects\IdentityAuthWithJWT\IdentityAuthWithJWT\obj\Debug\net6.0\ref\IdentityAuthWithJWT.dll
 D:\CS_projects\IdentityAuthWithJWT\IdentityAuthWithJWT\bin\Debug\net6.0\AutoMapper.dll
 D:\CS_projects\IdentityAuthWithJWT\IdentityAuthWithJWT\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+D:\CS_projects\IdentityAuthWithJWT\IdentityAuthWithJWT\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\CS_projects\IdentityAuthWithJWT\IdentityAuthWithJWT\bin\Debug\net6.0\Microsoft.IdentityModel.Abstractions.dll
