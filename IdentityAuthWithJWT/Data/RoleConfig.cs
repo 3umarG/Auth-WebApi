@@ -18,6 +18,11 @@ namespace IdentityAuthWithJWT.Data
 				{
 					Name = "Admin",
 					NormalizedName = "ADMIN"
+				},
+				new IdentityRole()
+				{
+					Name = "Manager",
+					NormalizedName = "MANAGER"
 				}
 
 				);
