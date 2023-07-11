@@ -1,4 +1,5 @@
 using IdentityAuthWithJWT;
+using IdentityAuthWithJWT.Config;
 using IdentityAuthWithJWT.Data;
 using IdentityAuthWithJWT.Extensions;
 using IdentityAuthWithJWT.Interfaces;
@@ -62,6 +63,18 @@ builder.Services.AddAuthentication(options =>
 						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
 					};
 				});
+
+// Add Policy for being Admin and Manager
+builder.Services.AddAuthorization(options =>
+{
+	options.AddPolicy("RequireAdminAndManagerRoles", policy =>
+	{
+		policy.Requirements.Add(new AdminAndManagerRequirement());
+	});
+});
+
+// Register the custom requirement handler
+builder.Services.AddAdminAndManagerRequirement();
 
 
 var app = builder.Build();

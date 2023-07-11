@@ -153,5 +153,13 @@ namespace IdentityAuthWithJWT.Controllers
 			var users = _authService.GetAllUsers();
 			return Ok(_mapper.Map<List<UserDto>>(users));
 		}
+
+
+		[Authorize(Policy = "RequireAdminAndManagerRoles")]
+		[HttpGet("GetAllUsersWithPolicy")]
+		public IActionResult GetAllUsersWithPolicyAsync()
+		{
+			return Ok(_mapper.Map<List<UserDto>>(_authService.GetAllUsers().ToList()));
+		}
 	}
 }
