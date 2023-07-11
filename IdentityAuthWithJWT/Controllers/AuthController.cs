@@ -48,6 +48,40 @@ namespace IdentityAuthWithJWT.Controllers
 					return BadRequest(ModelState);
 				}
 
+				await _userManager.AddToRoleAsync(userApi, "User");
+				return Ok(userDto);
+			}
+			catch (Exception)
+			{
+				return Problem("Something went wrong , please try again later !!", statusCode: 500);
+			}
+		}
+
+
+		[HttpPost("RegisterAdmin")]
+		public async Task<IActionResult> AdminRegister([FromBody] UserDto userDto)
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			try
+			{
+				var userApi = _mapper.Map<ApiUser>(userDto);
+				userApi.UserName = userDto.Email;
+				var result = await _userManager.CreateAsync(userApi, userDto.Password);
+
+				if (!result.Succeeded)
+				{
+					foreach (var error in result.Errors)
+					{
+						ModelState.AddModelError(error.Code, error.Description);
+					}
+					return BadRequest(ModelState);
+				}
+
+				await _userManager.AddToRoleAsync(userApi, "Admin");
 				return Ok(userDto);
 			}
 			catch (Exception)
