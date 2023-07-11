@@ -120,10 +120,10 @@ namespace IdentityAuthWithJWT.Controllers
 
 			return BadRequest(result);
 		}
-		
-		
+
+
 		[HttpPost("Update")]
-		public async Task<IActionResult> Update( [FromBody] UpdateUserDto newUser)
+		public async Task<IActionResult> Update([FromBody] UpdateUserDto newUser)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -141,6 +141,15 @@ namespace IdentityAuthWithJWT.Controllers
 				return BadRequest(ex.Message);
 			}
 		}
-		
+
+		//[Authorize]     // for forcing the user/client to send token for it
+		[Authorize(Roles = "Admin")]   // for determine specific rule to use this end point
+		[HttpGet]
+		public  IActionResult GetAllUsersAsync()
+		{
+
+			var users = _authService.GetAllUsers();
+			return Ok(_mapper.Map<List<UserDto>>(users));
+		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using IdentityAuthWithJWT.DTOs;
+﻿using IdentityAuthWithJWT.Data;
+using IdentityAuthWithJWT.DTOs;
 using IdentityAuthWithJWT.Models.Authentication.Register;
 
 namespace IdentityAuthWithJWT.Interfaces
@@ -14,5 +15,7 @@ namespace IdentityAuthWithJWT.Interfaces
 		Task<string> AddToRoleAsync(AddUserToRoleRequestDto model);
 
 		Task<UpdateUserDto> UpdateUserNameAsync(UpdateUserDto model);
+
+		List<ApiUser> GetAllUsers();
 	}
 }

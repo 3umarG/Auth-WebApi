@@ -18,7 +18,7 @@ namespace IdentityAuthWithJWT.Models
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly IMapper _mapper;
 		private readonly JWT _jwt;
-		public AuthService(UserManager<ApiUser> userManager, IMapper mapper, IOptions<JWT> jwt , RoleManager<IdentityRole> roleManager)
+		public AuthService(UserManager<ApiUser> userManager, IMapper mapper, IOptions<JWT> jwt, RoleManager<IdentityRole> roleManager)
 		{
 			_roleManager = roleManager;
 			_jwt = jwt.Value;
@@ -128,7 +128,7 @@ namespace IdentityAuthWithJWT.Models
 
 			if (userWithNewUserName is not null)
 				throw new Exception("There is already existed User with the new username");
-			
+
 			user.UserName = model.NewUserName;
 			user.Email = model.NewUserName;
 
@@ -166,6 +166,12 @@ namespace IdentityAuthWithJWT.Models
 				signingCredentials: signingCredentials);
 
 			return jwtSecurityToken;
+		}
+
+		public List<ApiUser> GetAllUsers()
+		{
+			var users = _userManager.Users.ToList();
+			return users;
 		}
 	}
 
