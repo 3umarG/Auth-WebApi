@@ -120,7 +120,8 @@ namespace IdentityAuthWithJWT.Controllers
 
 			return BadRequest(result);
 		}
-		/*
+		
+		
 		[HttpPost("Update")]
 		public async Task<IActionResult> Update( [FromBody] UpdateUserDto newUser)
 		{
@@ -131,24 +132,15 @@ namespace IdentityAuthWithJWT.Controllers
 
 			try
 			{
-				var user = await _userManager.FindByEmailAsync(newUser.Email);
 
-				if(user is null)
-				{
-					return NotFound("There is no User with that ID");
-				}
-
-				user.UserName = newUser.UserName;
-				user.Email = newUser.UserName;
-
-				await _userManager.UpdateAsync(user);
-				return Ok(user);
+				var updatedUser = await _authService.UpdateUserNameAsync(newUser);
+				return Ok(updatedUser);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				return Problem("There is an error occured",statusCode: 500);
+				return BadRequest(ex.Message);
 			}
 		}
-		*/
+		
 	}
 }
