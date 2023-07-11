@@ -114,5 +114,35 @@ namespace IdentityAuthWithJWT.Controllers
 				return Problem("Something went wrong with Login !!");
 			}
 		}
+
+
+		[HttpPost("Update")]
+		public async Task<IActionResult> Update( [FromBody] UpdateUserDto newUser)
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			try
+			{
+				var user = await _userManager.FindByEmailAsync(newUser.Email);
+
+				if(user is null)
+				{
+					return NotFound("There is no User with that ID");
+				}
+
+				user.UserName = newUser.UserName;
+				user.Email = newUser.UserName;
+
+				await _userManager.UpdateAsync(user);
+				return Ok(user);
+			}
+			catch (Exception)
+			{
+				return Problem("There is an error occured",statusCode: 500);
+			}
+		}
 	}
 }
