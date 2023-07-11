@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Folder Include="Models\Authentication\Login\" />
-    <Folder Include="Models\Authentication\Register\" />
   </ItemGroup>
 
 </Project>
