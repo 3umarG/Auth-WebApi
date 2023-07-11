@@ -12,5 +12,7 @@ namespace IdentityAuthWithJWT.Interfaces
 
 
 		Task<string> AddToRoleAsync(AddUserToRoleRequestDto model);
+
+		Task<UpdateUserDto> UpdateUserNameAsync(UpdateUserDto model);
 	}
 }

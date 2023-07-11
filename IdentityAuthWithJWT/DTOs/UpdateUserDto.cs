@@ -6,10 +6,9 @@ namespace IdentityAuthWithJWT.DTOs
 	public class UpdateUserDto
 	{
 		[Required]
-		[DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
+        public string OldUserName { get; set; }
 
 		[Required]
-		public string UserName { get; set; }
+		public string NewUserName { get; set; }
     }
 }

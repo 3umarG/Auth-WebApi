@@ -119,7 +119,22 @@ namespace IdentityAuthWithJWT.Models
 
 		}
 
+		public async Task<UpdateUserDto> UpdateUserNameAsync(UpdateUserDto model)
+		{
+			var user = await _userManager.FindByNameAsync(model.OldUserName)
+				?? throw new Exception("There is no User with that Name");
 
+			var userWithNewUserName = await _userManager.FindByNameAsync(model.NewUserName);
+
+			if (userWithNewUserName is not null)
+				throw new Exception("There is already existed User with the new username");
+			
+			user.UserName = model.NewUserName;
+			user.Email = model.NewUserName;
+
+			await _userManager.UpdateAsync(user);
+			return model;
+		}
 
 		private async Task<JwtSecurityToken> CreateJwtToken(ApiUser user)
 		{
