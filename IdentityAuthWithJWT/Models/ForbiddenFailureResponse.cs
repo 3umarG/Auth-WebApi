@@ -2,7 +2,7 @@
 
 namespace IdentityAuthWithJWT.Models
 {
-	public class UnAuthenticatedFailureResponse : IResponse
+	public class ForbiddenFailureResponse : IResponse
 	{
 		public int StatusCode { get; private set; }
 
@@ -10,12 +10,11 @@ namespace IdentityAuthWithJWT.Models
 
 		public bool Status { get; private set; }
 
-
-        public UnAuthenticatedFailureResponse()
+        public ForbiddenFailureResponse()
         {
-            Status = false;
-			StatusCode = 401;
-			Message = "You are UnAuthenticated , please provide correct token to your headers";
+			StatusCode = 403;
+			Message = "You are Forbidden from accessing this end point , this end point need certain Role";
+			Status = false;
         }
     }
 }

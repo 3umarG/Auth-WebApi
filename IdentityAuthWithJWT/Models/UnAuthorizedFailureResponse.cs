@@ -10,11 +10,12 @@ namespace IdentityAuthWithJWT.Models
 
 		public bool Status { get; private set; }
 
+
         public UnAuthorizedFailureResponse()
         {
-			StatusCode = 403;
-			Message = "You are UnAuthorized from accessing this end point , this end point need certain Role";
-			Status = false;
+            Status = false;
+			StatusCode = 401;
+			Message = "You are UnAuthorized , please provide correct token to your headers";
         }
     }
 }
