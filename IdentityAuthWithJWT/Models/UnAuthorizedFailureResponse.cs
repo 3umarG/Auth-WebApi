@@ -1,4 +1,5 @@
 ﻿using IdentityAuthWithJWT.Interfaces;
+using System.Text.Json;
 
 namespace IdentityAuthWithJWT.Models
 {
@@ -17,5 +18,14 @@ namespace IdentityAuthWithJWT.Models
 			StatusCode = 401;
 			Message = "You are UnAuthorized , please provide correct token to your headers";
         }
-    }
+
+		public override string ToString()
+		{
+			var options = new JsonSerializerOptions
+			{
+				PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+			};
+			return JsonSerializer.Serialize(this, options);
+		}
+	}
 }

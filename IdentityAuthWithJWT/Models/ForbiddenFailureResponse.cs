@@ -1,4 +1,5 @@
 ﻿using IdentityAuthWithJWT.Interfaces;
+using System.Text.Json;
 
 namespace IdentityAuthWithJWT.Models
 {
@@ -16,5 +17,14 @@ namespace IdentityAuthWithJWT.Models
 			Message = "You are Forbidden from accessing this end point , this end point need certain Role";
 			Status = false;
         }
-    }
+
+		public override string ToString()
+		{
+			var options = new JsonSerializerOptions
+			{
+				PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+			};
+			return JsonSerializer.Serialize(this, options);
+		}
+	}
 }
