@@ -21,6 +21,8 @@ namespace IdentityAuthWithJWT.Controllers
 		private readonly IAuthService _authService;
 		private IResponseFactory _successFactory;
 		private IResponseFactory _failureFactory;
+		private readonly IResponseFactory _unAuthorizedFactory;
+		private readonly IResponseFactory _forbiddenFactory;
 
 		public AuthController(
 			IAuthService authService,
@@ -28,8 +30,14 @@ namespace IdentityAuthWithJWT.Controllers
 		{
 			_authService = authService;
 			_mapper = mapper;
+			_unAuthorizedFactory = new UnAuthorizedFailureResponseFactory();
+			_forbiddenFactory = new ForbiddenFailureResponseFactory();
 		}
 
+
+		[ProducesResponseType(StatusCodes.Status200OK ,Type = typeof(SuccessResponse<AuthModel>))]
+		[ProducesResponseType(StatusCodes.Status400BadRequest , Type = typeof(FailureResponse))]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		[HttpPost("Register")]
 		public async Task<IActionResult> Register([FromBody] UserDto userDto)
 		{
@@ -58,6 +66,9 @@ namespace IdentityAuthWithJWT.Controllers
 		}
 
 
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<AuthModel>))]
+		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailureResponse))]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		[HttpPost("RegisterAdmin")]
 		public async Task<IActionResult> RegisterAdmin([FromBody] UserDto userDto)
 		{
@@ -86,6 +97,11 @@ namespace IdentityAuthWithJWT.Controllers
 			}
 		}
 
+
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<AuthModel>))]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(UnAuthorizedFailureResponse))]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		[HttpPost("Login")]
 		public async Task<IActionResult> Login([FromBody] UserLoginDto userDto)
 		{
@@ -100,8 +116,7 @@ namespace IdentityAuthWithJWT.Controllers
 
 				if (!result.IsAuthed)
 				{
-					_failureFactory = new FailureResponseFactory(400, result.Message);
-					return BadRequest(_failureFactory.CreateResponse());
+					return new UnauthorizedObjectResult(_unAuthorizedFactory.CreateResponse());
 				}
 
 				_successFactory = new SuccessResponseFactory<AuthModel>(200, result);
@@ -114,6 +129,10 @@ namespace IdentityAuthWithJWT.Controllers
 		}
 
 
+
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<AddUserToRoleRequestDto>))]
+		[ProducesResponseType(StatusCodes.Status400BadRequest , Type = typeof(FailureResponse))]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		[HttpPost("AddUserToRole")]
 		public async Task<IActionResult> AddToRole([FromBody] AddUserToRoleRequestDto model)
 		{
@@ -135,6 +154,10 @@ namespace IdentityAuthWithJWT.Controllers
 		}
 
 
+
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<UpdateUserDto>))]
+		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailureResponse))]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		[HttpPost("Update")]
 		public async Task<IActionResult> Update([FromBody] UpdateUserDto newUser)
 		{
@@ -156,8 +179,16 @@ namespace IdentityAuthWithJWT.Controllers
 			}
 		}
 
+
+
+
 		//[Authorize]     // for forcing the user/client to send token for it
 		[Authorize(Roles = "Admin")]   // for determine specific rule to use this end point
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<List<UserDto>>))]
+		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailureResponse))]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(UnAuthorizedFailureResponse))]
+		[ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ForbiddenFailureResponse))]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		[HttpGet]
 		public  IActionResult GetAllUsersAsync()
 		{
@@ -168,6 +199,12 @@ namespace IdentityAuthWithJWT.Controllers
 		}
 
 
+
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<List<UserDto>>))]
+		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailureResponse))]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(UnAuthorizedFailureResponse))]
+		[ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ForbiddenFailureResponse))]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		[Authorize(Policy = "RequireAdminAndManagerRoles")]
 		[HttpGet("GetAllUsersWithPolicy")]
 		public IActionResult GetAllUsersWithPolicyAsync()
