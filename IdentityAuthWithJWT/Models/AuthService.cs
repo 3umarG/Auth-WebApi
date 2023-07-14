@@ -64,10 +64,13 @@ namespace IdentityAuthWithJWT.Models
 
 			auth.Email = user.Email;
 			auth.UserName = user.UserName;
-			//auth.ExpiresOn = jwtSecurityToken.ValidTo;
+			auth.AccessTokenExpiration = jwtSecurityToken.ValidTo;
 			auth.IsAuthed = true;
 			auth.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
+			// in this case i ask for any active refresh token that still valid and assign to user
+			// I can do another scenario by assign new refresh token to user if he login and revoke any active token
+			// ... I can do that by remove the if() part and only generate new one directly , and add Revoke() method 
 			if (user.RefreshTokens.Any(t => t.IsActive))
 			{
 				var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
@@ -131,7 +134,7 @@ namespace IdentityAuthWithJWT.Models
 			{
 				Email = apiUser.Email,
 				IsAuthed = true,
-				//ExpiresOn = jwtSecurityToken.ValidTo,
+				AccessTokenExpiration = jwtSecurityToken.ValidTo,
 				Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
 				UserName = apiUser.Email
 			};
@@ -198,7 +201,7 @@ namespace IdentityAuthWithJWT.Models
 			return new RefreshToken
 			{
 				Token = Convert.ToBase64String(randomNumber),
-				ExpiresOn = DateTime.UtcNow.AddMinutes(1),
+				ExpiresOn = DateTime.UtcNow.AddDays(10),
 				CreatedOn = DateTime.UtcNow
 			};
 		}
