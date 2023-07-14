@@ -4,6 +4,7 @@ using IdentityAuthWithJWT.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IdentityAuthWithJWT.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230714001903_AddRefreshTokens")]
+    partial class AddRefreshTokens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,22 +126,22 @@ namespace IdentityAuthWithJWT.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "00715d07-caab-40f7-88ca-2988d3e65cf4",
-                            ConcurrencyStamp = "ef790945-e1b5-4ee5-ab31-280745e59bff",
+                            Id = "2c2558f6-c688-4d56-91ca-288942d704d3",
+                            ConcurrencyStamp = "a3db3db6-c991-4a36-887f-8d844e44a259",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "f1a1c3ff-9508-4e8c-8d76-e7b8961f69fb",
-                            ConcurrencyStamp = "79669c6c-c604-404f-8448-67d3a406e669",
+                            Id = "6a0642f5-3128-4498-8850-ba4279e29acb",
+                            ConcurrencyStamp = "e90b1513-4806-4e5d-ab2e-78bd60010fbe",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "80a71f70-ca7e-4bb0-9058-a7300ce93404",
-                            ConcurrencyStamp = "1bdf3f69-b417-4e32-a364-aaa47426016b",
+                            Id = "7d782639-d610-4bc2-91ef-458133e9b562",
+                            ConcurrencyStamp = "6f664972-798c-4c92-b6b8-002828b5ac85",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         });
@@ -255,6 +257,9 @@ namespace IdentityAuthWithJWT.Migrations
                 {
                     b.OwnsMany("IdentityAuthWithJWT.Models.Authentication.RefreshToken", "RefreshTokens", b1 =>
                         {
+                            b1.Property<string>("ApiUserId")
+                                .HasColumnType("nvarchar(450)");
+
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
                                 .HasColumnType("int");
@@ -274,18 +279,12 @@ namespace IdentityAuthWithJWT.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("UserId")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(450)");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("UserId");
+                            b1.HasKey("ApiUserId", "Id");
 
                             b1.ToTable("RefreshToken");
 
                             b1.WithOwner()
-                                .HasForeignKey("UserId");
+                                .HasForeignKey("ApiUserId");
                         });
 
                     b.Navigation("RefreshTokens");

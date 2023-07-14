@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace IdentityAuthWithJWT.Data
 {
@@ -14,6 +15,13 @@ namespace IdentityAuthWithJWT.Data
 		{
 			base.OnModelCreating(builder);
 
+			builder.Entity<ApiUser>().OwnsMany(
+				p => p.RefreshTokens, a =>
+				{
+					a.WithOwner().HasForeignKey("UserId");
+					a.Property<int>("Id");
+					a.HasKey("Id");
+				});
 			builder.ApplyConfiguration(new RoleConfig());
 
 			builder.Entity<ApiUser>().ToTable("Users");

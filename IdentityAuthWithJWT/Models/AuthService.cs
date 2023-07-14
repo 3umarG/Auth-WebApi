@@ -2,12 +2,15 @@
 using IdentityAuthWithJWT.Data;
 using IdentityAuthWithJWT.DTOs;
 using IdentityAuthWithJWT.Interfaces;
+using IdentityAuthWithJWT.Models.Authentication;
 using IdentityAuthWithJWT.Models.Authentication.Register;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace IdentityAuthWithJWT.Models
@@ -62,9 +65,29 @@ namespace IdentityAuthWithJWT.Models
 
 			auth.Email = user.Email;
 			auth.UserName = user.UserName;
-			auth.ExpiresOn = jwtSecurityToken.ValidTo;
+			auth.AccessTokenExpiration = jwtSecurityToken.ValidTo;
 			auth.IsAuthed = true;
 			auth.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+
+			// in this case i ask for any active refresh token that still valid and assign to user
+			// I can do another scenario by assign new refresh token to user if he login and revoke any active token
+			// ... I can do that by remove the if() part and only generate new one directly , and add Revoke() method 
+			if (user.RefreshTokens.Any(t => t.IsActive))
+			{
+				var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
+				auth.RefreshToken = activeRefreshToken.Token;
+				auth.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
+			}
+			else
+			{
+				var generatedRefreshToken = GenerateRefreshToken();
+
+				auth.RefreshToken = generatedRefreshToken.Token;
+				auth.RefreshTokenExpiration = generatedRefreshToken.ExpiresOn;
+
+				user.RefreshTokens.Add(generatedRefreshToken);
+				await _userManager.UpdateAsync(user);
+			}
 
 			return auth;
 		}
@@ -112,7 +135,7 @@ namespace IdentityAuthWithJWT.Models
 			{
 				Email = apiUser.Email,
 				IsAuthed = true,
-				ExpiresOn = jwtSecurityToken.ValidTo,
+				AccessTokenExpiration = jwtSecurityToken.ValidTo,
 				Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
 				UserName = apiUser.Email
 			};
@@ -162,16 +185,111 @@ namespace IdentityAuthWithJWT.Models
 				issuer: _jwt.Issuer,
 				audience: _jwt.Audience,
 				claims: claims,
-				expires: DateTime.Now.AddDays(_jwt.DurationInDays),
+				expires: DateTime.Now.AddMinutes(_jwt.DurationInMinutes),
 				signingCredentials: signingCredentials);
 
 			return jwtSecurityToken;
+		}
+
+		private RefreshToken GenerateRefreshToken()
+		{
+			var randomNumber = new byte[32];
+
+			using var generator = new RNGCryptoServiceProvider();
+
+			generator.GetBytes(randomNumber);
+
+			return new RefreshToken
+			{
+				Token = Convert.ToBase64String(randomNumber),
+				ExpiresOn = DateTime.UtcNow.AddDays(10),
+				CreatedOn = DateTime.UtcNow
+			};
 		}
 
 		public List<ApiUser> GetAllUsers()
 		{
 			var users = _userManager.Users.ToList();
 			return users;
+		}
+
+		public async Task<AuthModel> RefreshTokenAsync(string oldRefreshToken)
+		{
+			var auth = new AuthModel();
+
+			// check for the user :
+			var user = await _userManager
+						.Users
+						.FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == oldRefreshToken));
+
+			if (user is null)
+			{
+				auth.IsAuthed = false;
+				auth.Message = "There is no user with that RefreshToken";
+				return auth;
+			}
+
+
+			// check the activation of the given refresh token 
+			// if active , go ahead and refresh ..
+			// if it is not active , you must go and login again to get new one ..
+			var refreshToken = user.RefreshTokens.Single(t => t.Token == oldRefreshToken);
+			if (!refreshToken.IsActive)
+			{
+				auth.IsAuthed = false;
+				auth.Message = "Inactive RefreshToken , you should re-login again to get active one !!";
+				return auth;
+			}
+
+			// revoke the current to generate new one
+			refreshToken.RevokedOn = DateTime.UtcNow;
+
+			// generate new refresh token and assign it to be the current for the user
+			var newRefreshToken = GenerateRefreshToken();
+			user.RefreshTokens.Add(newRefreshToken);
+			await _userManager.UpdateAsync(user);
+
+			// generate new JWT access token
+			var jwtToken = await CreateJwtToken(user);
+
+			auth.Email = user.Email;
+			auth.UserName = user.UserName;
+
+			auth.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+			auth.RefreshToken = newRefreshToken.Token;
+
+			auth.AccessTokenExpiration = jwtToken.ValidTo;
+			auth.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
+
+			auth.IsAuthed = true;
+
+
+			return auth;
+		}
+
+		public async Task<bool> RevokeTokenAsync(string token)
+		{
+			// check for the user :
+			var user = await _userManager
+						.Users
+						.FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+			if (user is null)
+				return false;
+
+			var refreshToken = user.RefreshTokens.First(user => user.Token == token);
+
+			// already is not active ...
+			if (!refreshToken.IsActive)
+			{
+				return false;
+			}
+
+			refreshToken.RevokedOn = DateTime.UtcNow;
+			await _userManager.UpdateAsync(user);
+
+			return true;
+
 		}
 	}
 

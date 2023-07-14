@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using IdentityAuthWithJWT.Models.Authentication;
+using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAuthWithJWT.Data
 {
@@ -8,6 +9,6 @@ namespace IdentityAuthWithJWT.Data
 
 		public string LastName { get; set; }
 
-
-	}
+        public ICollection<RefreshToken>? RefreshTokens { get; set; }
+    }
 }
