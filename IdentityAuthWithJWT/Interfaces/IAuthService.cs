@@ -19,5 +19,7 @@ namespace IdentityAuthWithJWT.Interfaces
 		List<ApiUser> GetAllUsers();
 
 		public Task<AuthModel> RefreshTokenAsync(string oldRefreshToken);
+
+		public Task<bool> RevokeTokenAsync(string token);
 	}
 }

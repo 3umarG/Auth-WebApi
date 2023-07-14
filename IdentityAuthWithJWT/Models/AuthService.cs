@@ -257,14 +257,39 @@ namespace IdentityAuthWithJWT.Models
 
 			auth.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 			auth.RefreshToken = newRefreshToken.Token;
-			
+
 			auth.AccessTokenExpiration = jwtToken.ValidTo;
 			auth.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
-			
+
 			auth.IsAuthed = true;
-		
+
 
 			return auth;
+		}
+
+		public async Task<bool> RevokeTokenAsync(string token)
+		{
+			// check for the user :
+			var user = await _userManager
+						.Users
+						.FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+			if (user is null)
+				return false;
+
+			var refreshToken = user.RefreshTokens.First(user => user.Token == token);
+
+			// already is not active ...
+			if (!refreshToken.IsActive)
+			{
+				return false;
+			}
+
+			refreshToken.RevokedOn = DateTime.UtcNow;
+			await _userManager.UpdateAsync(user);
+
+			return true;
+
 		}
 	}
 
