@@ -241,6 +241,23 @@ namespace IdentityAuthWithJWT.Controllers
 			return Ok(_successFactory.CreateResponse());
 		}
 
+		[HttpPost("RevokeToken")]
+		public async Task<IActionResult> RevokeTokenAsync()
+		{
+			var token = Request.Cookies["refreshToken"];
+
+			if (token is null)
+				return BadRequest("Refresh Token is Required");
+
+			var result = await _authService.RevokeTokenAsync(token);
+
+			if (!result)
+				return BadRequest("Invalid Refresh Token");
+
+			return Ok("Revoked");
+		}
+
+
 
 		private void SetRefreshTokenToCookies(string refreshToken, DateTime expiresOn)
 		{
