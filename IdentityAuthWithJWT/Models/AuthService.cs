@@ -198,7 +198,7 @@ namespace IdentityAuthWithJWT.Models
 			return new RefreshToken
 			{
 				Token = Convert.ToBase64String(randomNumber),
-				ExpiresOn = DateTime.UtcNow.AddDays(10),
+				ExpiresOn = DateTime.UtcNow.AddMinutes(1),
 				CreatedOn = DateTime.UtcNow
 			};
 		}
