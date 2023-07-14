@@ -220,6 +220,28 @@ namespace IdentityAuthWithJWT.Controllers
 		}
 
 
+		[HttpGet("RefreshToken")]
+		public async Task<IActionResult> RefreshTokenAsync()
+		{
+			var refreshToken = Request.Cookies["refreshToken"];
+
+			if (refreshToken is null)
+				return BadRequest("Please send RefreshToken by Cookies");
+
+			var auth = await _authService.RefreshTokenAsync(refreshToken);
+
+			if (!auth.IsAuthed)
+			{
+				return BadRequest(auth.Message);
+			}
+
+			SetRefreshTokenToCookies(auth.RefreshToken, auth.RefreshTokenExpiration);
+			
+			_successFactory = new SuccessResponseFactory<AuthModel>(200, auth);
+			return Ok(_successFactory.CreateResponse());
+		}
+
+
 		private void SetRefreshTokenToCookies(string refreshToken, DateTime expiresOn)
 		{
 			var cookieOptions = new CookieOptions
