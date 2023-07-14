@@ -2,12 +2,14 @@
 using IdentityAuthWithJWT.Data;
 using IdentityAuthWithJWT.DTOs;
 using IdentityAuthWithJWT.Interfaces;
+using IdentityAuthWithJWT.Models.Authentication;
 using IdentityAuthWithJWT.Models.Authentication.Register;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace IdentityAuthWithJWT.Models
@@ -62,9 +64,26 @@ namespace IdentityAuthWithJWT.Models
 
 			auth.Email = user.Email;
 			auth.UserName = user.UserName;
-			auth.ExpiresOn = jwtSecurityToken.ValidTo;
+			//auth.ExpiresOn = jwtSecurityToken.ValidTo;
 			auth.IsAuthed = true;
 			auth.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+
+			if (user.RefreshTokens.Any(t => t.IsActive))
+			{
+				var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
+				auth.RefreshToken = activeRefreshToken.Token;
+				auth.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
+			}
+			else
+			{
+				var generatedRefreshToken = GenerateRefreshToken();
+
+				auth.RefreshToken = generatedRefreshToken.Token;
+				auth.RefreshTokenExpiration = generatedRefreshToken.ExpiresOn;
+
+				user.RefreshTokens.Add(generatedRefreshToken);
+				await _userManager.UpdateAsync(user);
+			}
 
 			return auth;
 		}
@@ -112,7 +131,7 @@ namespace IdentityAuthWithJWT.Models
 			{
 				Email = apiUser.Email,
 				IsAuthed = true,
-				ExpiresOn = jwtSecurityToken.ValidTo,
+				//ExpiresOn = jwtSecurityToken.ValidTo,
 				Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
 				UserName = apiUser.Email
 			};
@@ -162,10 +181,26 @@ namespace IdentityAuthWithJWT.Models
 				issuer: _jwt.Issuer,
 				audience: _jwt.Audience,
 				claims: claims,
-				expires: DateTime.Now.AddDays(_jwt.DurationInDays),
+				expires: DateTime.Now.AddMinutes(_jwt.DurationInMinutes),
 				signingCredentials: signingCredentials);
 
 			return jwtSecurityToken;
+		}
+
+		private RefreshToken GenerateRefreshToken()
+		{
+			var randomNumber = new byte[32];
+
+			using var generator = new RNGCryptoServiceProvider();
+
+			generator.GetBytes(randomNumber);
+
+			return new RefreshToken
+			{
+				Token = Convert.ToBase64String(randomNumber),
+				ExpiresOn = DateTime.UtcNow.AddDays(10),
+				CreatedOn = DateTime.UtcNow
+			};
 		}
 
 		public List<ApiUser> GetAllUsers()
