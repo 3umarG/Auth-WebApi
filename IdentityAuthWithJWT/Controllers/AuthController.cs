@@ -35,8 +35,8 @@ namespace IdentityAuthWithJWT.Controllers
 		}
 
 
-		[ProducesResponseType(StatusCodes.Status200OK ,Type = typeof(SuccessResponse<AuthModel>))]
-		[ProducesResponseType(StatusCodes.Status400BadRequest , Type = typeof(FailureResponse))]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<AuthModel>))]
+		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailureResponse))]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		[HttpPost("Register")]
 		public async Task<IActionResult> Register([FromBody] UserDto userDto)
@@ -120,6 +120,11 @@ namespace IdentityAuthWithJWT.Controllers
 				}
 
 				_successFactory = new SuccessResponseFactory<AuthModel>(200, result);
+
+				if (!result.RefreshToken.IsNullOrEmpty())
+				{
+					SetRefreshTokenToCookies(result.RefreshToken, result.RefreshTokenExpiration);
+				}
 				return Ok(_successFactory.CreateResponse());
 			}
 			catch (Exception)
@@ -131,7 +136,7 @@ namespace IdentityAuthWithJWT.Controllers
 
 
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<AddUserToRoleRequestDto>))]
-		[ProducesResponseType(StatusCodes.Status400BadRequest , Type = typeof(FailureResponse))]
+		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailureResponse))]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		[HttpPost("AddUserToRole")]
 		public async Task<IActionResult> AddToRole([FromBody] AddUserToRoleRequestDto model)
@@ -145,7 +150,7 @@ namespace IdentityAuthWithJWT.Controllers
 
 			if (result.IsNullOrEmpty())
 			{
-				_successFactory = new SuccessResponseFactory<AddUserToRoleRequestDto>(200, model ,"Added Successfully");
+				_successFactory = new SuccessResponseFactory<AddUserToRoleRequestDto>(200, model, "Added Successfully");
 				return Ok(_successFactory.CreateResponse());
 			}
 
@@ -190,11 +195,11 @@ namespace IdentityAuthWithJWT.Controllers
 		[ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ForbiddenFailureResponse))]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		[HttpGet]
-		public  IActionResult GetAllUsersAsync()
+		public IActionResult GetAllUsersAsync()
 		{
 
 			var users = _authService.GetAllUsers();
-			_successFactory = new SuccessResponseFactory<List<UserDto>>(200,_mapper.Map<List<UserDto>>(users));
+			_successFactory = new SuccessResponseFactory<List<UserDto>>(200, _mapper.Map<List<UserDto>>(users));
 			return Ok(_successFactory.CreateResponse());
 		}
 
@@ -212,6 +217,18 @@ namespace IdentityAuthWithJWT.Controllers
 			var users = _authService.GetAllUsers();
 			_successFactory = new SuccessResponseFactory<List<UserDto>>(200, _mapper.Map<List<UserDto>>(users));
 			return Ok(_successFactory.CreateResponse());
+		}
+
+
+		private void SetRefreshTokenToCookies(string refreshToken, DateTime expiresOn)
+		{
+			var cookieOptions = new CookieOptions
+			{
+				HttpOnly = true,
+				Expires = expiresOn.ToLocalTime()
+			};
+
+			Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
 		}
 	}
 }
