@@ -17,5 +17,7 @@ namespace IdentityAuthWithJWT.Interfaces
 		Task<UpdateUserDto> UpdateUserNameAsync(UpdateUserDto model);
 
 		List<ApiUser> GetAllUsers();
+
+		public Task<AuthModel> RefreshTokenAsync(string oldRefreshToken);
 	}
 }

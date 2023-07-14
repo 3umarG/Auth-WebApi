@@ -5,6 +5,7 @@ using IdentityAuthWithJWT.Interfaces;
 using IdentityAuthWithJWT.Models.Authentication;
 using IdentityAuthWithJWT.Models.Authentication.Register;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -210,6 +211,60 @@ namespace IdentityAuthWithJWT.Models
 		{
 			var users = _userManager.Users.ToList();
 			return users;
+		}
+
+		public async Task<AuthModel> RefreshTokenAsync(string oldRefreshToken)
+		{
+			var auth = new AuthModel();
+
+			// check for the user :
+			var user = await _userManager
+						.Users
+						.FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == oldRefreshToken));
+
+			if (user is null)
+			{
+				auth.IsAuthed = false;
+				auth.Message = "There is no user with that RefreshToken";
+				return auth;
+			}
+
+
+			// check the activation of the given refresh token 
+			// if active , go ahead and refresh ..
+			// if it is not active , you must go and login again to get new one ..
+			var refreshToken = user.RefreshTokens.Single(t => t.Token == oldRefreshToken);
+			if (!refreshToken.IsActive)
+			{
+				auth.IsAuthed = false;
+				auth.Message = "Inactive RefreshToken , you should re-login again to get active one !!";
+				return auth;
+			}
+
+			// revoke the current to generate new one
+			refreshToken.RevokedOn = DateTime.UtcNow;
+
+			// generate new refresh token and assign it to be the current for the user
+			var newRefreshToken = GenerateRefreshToken();
+			user.RefreshTokens.Add(newRefreshToken);
+			await _userManager.UpdateAsync(user);
+
+			// generate new JWT access token
+			var jwtToken = await CreateJwtToken(user);
+
+			auth.Email = user.Email;
+			auth.UserName = user.UserName;
+
+			auth.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+			auth.RefreshToken = newRefreshToken.Token;
+			
+			auth.AccessTokenExpiration = jwtToken.ValidTo;
+			auth.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
+			
+			auth.IsAuthed = true;
+		
+
+			return auth;
 		}
 	}
 
