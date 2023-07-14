@@ -15,7 +15,7 @@ namespace IdentityAuthWithJWT.Models.Authentication.Register
 
         public string Token { get; set; }
 
-        //public DateTime ExpiresOn { get; set; }
+        public DateTime AccessTokenExpiration { get; set; }
 
         [JsonIgnore]
         public string? RefreshToken { get; set; }
