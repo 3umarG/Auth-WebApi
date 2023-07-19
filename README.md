@@ -20,13 +20,25 @@ The demo .NET API project serves as a learning resource and example implementati
 
 The following technologies and frameworks are utilized in this project:
 
-- .NET: A free, cross-platform, open-source framework for building modern applications.
-- ASP.NET Core: A web framework for building cloud-based, internet-connected applications.
-- Entity Framework Core (EF Core): An object-relational mapper (ORM) that simplifies database access in .NET applications.
-- JSON Web Tokens (JWT): A compact, URL-safe means of representing claims to be transferred between two parties.
-- Identity Framework: A framework for managing user authentication, authorization, and user accounts.
-- Swagger: A tool for designing, building, documenting, and consuming RESTful web services.
+- **.NET**: A free, cross-platform, open-source framework for building modern applications.
+- **ASP.NET Core**: A web framework for building cloud-based, internet-connected applications.
+- **Entity Framework Core (EF Core)**: An object-relational mapper (ORM) that simplifies database access in .NET applications.
+- **JSON Web Tokens (JWT)**: A compact, URL-safe means of representing claims to be transferred between two parties.
+- **Identity Framework**: A framework for managing user authentication, authorization, and user accounts.
+- **Swagger**: A tool for designing, building, documenting, and consuming RESTful web services.
 
+## Steps for Applying Auth. to any Project : 
+- **Add Dependencies and Packages** : JWT Bearer & Identity Core.
+- **Add JWT Configuration** : to ```appsettings.json```.
+- **Add JWT Model Class.**
+- **Create New IdentityUser** : if you have addition properties.
+- **Create RefreshToken Class and assign it to the IdentityUser.**
+- **Create ApplicationDbContext** : but with type ```IdentityDbContext<IdentityUser>```.
+- **Create IAuthService and implement all Auth Methods.**
+- **Inject** and add all dependencies to ```Program.cs```.
+
+
+ 
 ## Authentication and Authorization
 
 Authentication and authorization are crucial aspects of building secure APIs. This project demonstrates how to implement these concepts using industry-standard techniques and best practices.
