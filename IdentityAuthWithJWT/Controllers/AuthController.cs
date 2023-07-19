@@ -4,6 +4,7 @@ using IdentityAuthWithJWT.DTOs;
 using IdentityAuthWithJWT.Interfaces;
 using IdentityAuthWithJWT.Models;
 using IdentityAuthWithJWT.Models.Authentication.Register;
+using IdentityAuthWithJWT.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthWithJWT.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	public class AuthController : ControllerBase
 	{
