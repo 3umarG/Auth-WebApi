@@ -4,6 +4,7 @@ using IdentityAuthWithJWT.Data;
 using IdentityAuthWithJWT.Extensions;
 using IdentityAuthWithJWT.Interfaces;
 using IdentityAuthWithJWT.Models;
+using IdentityAuthWithJWT.Models.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,13 +28,13 @@ builder.Services.AddSwaggerGen(options =>
 	options.SwaggerDoc("v1", new OpenApiInfo
 	{
 		Version = "v1",
-		Title = "MoviesApi",
-		Description = "My first api",
+		Title = "AuthWebApi",
+		Description = "Demo Web Api for using Identity Framework with JWT using Access Tokens and Refresh Tokens .",
 		TermsOfService = new Uri("https://www.google.com"),
 		Contact = new OpenApiContact
 		{
-			Name = "DevCreed",
-			Email = "test@domain.com",
+			Name = "OmarGomaa",
+			Email = "omargomaa.dev@gmail.com",
 			Url = new Uri("https://www.google.com")
 		},
 		License = new OpenApiLicense
