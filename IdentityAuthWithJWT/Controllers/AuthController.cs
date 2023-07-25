@@ -4,6 +4,7 @@ using IdentityAuthWithJWT.DTOs;
 using IdentityAuthWithJWT.Interfaces;
 using IdentityAuthWithJWT.Models;
 using IdentityAuthWithJWT.Models.Authentication.Register;
+using IdentityAuthWithJWT.Models.Factories;
 using IdentityAuthWithJWT.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

@@ -191,7 +191,7 @@ namespace IdentityAuthWithJWT.Models
 			return jwtSecurityToken;
 		}
 
-		private RefreshToken GenerateRefreshToken()
+		private static RefreshToken GenerateRefreshToken()
 		{
 			var randomNumber = new byte[32];
 

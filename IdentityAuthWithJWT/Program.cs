@@ -120,6 +120,11 @@ builder.Services.AddAuthentication(options =>
 						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
 						ClockSkew = TimeSpan.Zero
 					};
+				})
+				.AddGoogle(googleOptions =>
+				{
+					googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+					googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
 				});
 
 // Add Policy for being Admin and Manager
