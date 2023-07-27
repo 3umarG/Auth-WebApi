@@ -25,15 +25,18 @@ namespace IdentityAuthWithJWT.Controllers
 		private IResponseFactory _failureFactory;
 		private readonly IResponseFactory _unAuthorizedFactory;
 		private readonly IResponseFactory _forbiddenFactory;
+		private readonly IMailService _mailService;
 
 		public AuthController(
 			IAuthService authService,
-			IMapper mapper)
+			IMapper mapper,
+			IMailService mailService)
 		{
 			_authService = authService;
 			_mapper = mapper;
 			_unAuthorizedFactory = new UnAuthorizedFailureResponseFactory();
 			_forbiddenFactory = new ForbiddenFailureResponseFactory();
+			_mailService = mailService;
 		}
 
 
@@ -57,7 +60,11 @@ namespace IdentityAuthWithJWT.Controllers
 					return BadRequest(_failureFactory.CreateResponse());
 				}
 
-
+				var sendEmailResult = await _mailService.SendWelcomeEmailAsync(result.Email, result.UserName);
+				if (!sendEmailResult.IsNullOrEmpty())
+				{
+					return Problem(sendEmailResult , statusCode: 500);
+				}
 				_successFactory = new SuccessResponseFactory<AuthModel>(200, result);
 				return Ok(_successFactory.CreateResponse());
 			}
