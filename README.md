@@ -11,6 +11,7 @@ This repository contains a demo .NET API project that demonstrates the usage of 
 - [Identity Framework with EF Core](#identity-framework-with-ef-core)
 - [Authorization Based on Roles and Policies](#authorization-based-on-roles-and-policies)
 - [Refresh Tokens](#refresh-tokens)
+- [Welcome Emails](#welcome-emails)
 
 ## Introduction
 
@@ -66,3 +67,8 @@ By utilizing roles and policies, you can ensure that only authorized users with 
 To enhance security and extend the lifetime of JWT access tokens, this project incorporates the usage of refresh tokens. Refresh tokens are long-lived tokens that are used to obtain new access tokens when they expire.
 
 When a user authenticates and receives an access token, a refresh token is also generated and associated with the user. When the access token expires, the user can use the refresh token to obtain a new access token without re-authenticating. This technique reduces the active lifetime of access tokens, limiting their exposure and improving security.
+
+## Welcome Emails
+ - After any user compelete his registeration by providing correct E-mail Address , an Welcome Email will be sent to him/her .
+ - Packages used for sending emails by using SMTP : `MailKit` , `MimeKit` .
+
