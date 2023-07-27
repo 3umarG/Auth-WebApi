@@ -4,6 +4,7 @@ using IdentityAuthWithJWT.Data;
 using IdentityAuthWithJWT.Extensions;
 using IdentityAuthWithJWT.Interfaces;
 using IdentityAuthWithJWT.Models;
+using IdentityAuthWithJWT.Models.Authentication;
 using IdentityAuthWithJWT.Models.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -139,6 +140,8 @@ builder.Services.AddAuthorization(options =>
 // Register the custom requirement handler
 builder.Services.AddAdminAndManagerRequirement();
 
+// Configure MailSettings
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
 var app = builder.Build();
 
