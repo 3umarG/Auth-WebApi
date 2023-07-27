@@ -4,7 +4,9 @@ using IdentityAuthWithJWT.Data;
 using IdentityAuthWithJWT.Extensions;
 using IdentityAuthWithJWT.Interfaces;
 using IdentityAuthWithJWT.Models;
+using IdentityAuthWithJWT.Models.Authentication;
 using IdentityAuthWithJWT.Models.Responses;
+using IdentityAuthWithJWT.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddTransient<IMailService, MailService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -139,6 +142,8 @@ builder.Services.AddAuthorization(options =>
 // Register the custom requirement handler
 builder.Services.AddAdminAndManagerRequirement();
 
+// Configure MailSettings
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
 var app = builder.Build();
 
