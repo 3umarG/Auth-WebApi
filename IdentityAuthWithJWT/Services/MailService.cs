@@ -17,7 +17,7 @@ namespace IdentityAuthWithJWT.Services
 			_mailSettings = mailSettings.Value;
 		}
 
-		public async Task<bool> SendWelcomeEmailAsync(string toEmail, string userName)
+		public async Task<string> SendWelcomeEmailAsync(string toEmail, string userName)
 		{
 			try
 			{
@@ -41,11 +41,11 @@ namespace IdentityAuthWithJWT.Services
 				smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
 				await smtp.SendAsync(email);
 				smtp.Disconnect(true);
-				return true;
+				return string.Empty;
 			}
-			catch
+			catch (Exception ex)
 			{
-				return false;
+				return ex.Message;
 			}
 
 
